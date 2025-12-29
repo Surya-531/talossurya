@@ -9,15 +9,13 @@ type CardItem = {
   tag?: string;
 };
 
-type Props = {
-  items: CardItem[];
-  direction?: "left" | "right";
-};
-
 export function InfiniteCometCards({
   items,
   direction = "left",
-}: Props) {
+}: {
+  items: CardItem[];
+  direction?: "left" | "right";
+}) {
   const [paused, setPaused] = useState(false);
 
   return (
@@ -26,37 +24,51 @@ export function InfiniteCometCards({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* 🌌 Star background */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(1px_1px_at_20%_30%,white,transparent),radial-gradient(1px_1px_at_80%_40%,white,transparent),radial-gradient(1px_1px_at_50%_70%,white,transparent)] opacity-20" />
+      {/* Star background */}
+      <div className="pointer-events-none absolute inset-0 opacity-20 bg-[radial-gradient(1px_1px_at_20%_30%,white,transparent),radial-gradient(1px_1px_at_80%_40%,white,transparent),radial-gradient(1px_1px_at_50%_70%,white,transparent)]" />
 
-      {/* Moving track */}
-      <div
-        className="flex w-max gap-8 px-8 animate-infinite-scroll"
-        style={{
-          animationPlayState: paused ? "paused" : "running",
-          animationDirection: direction === "right" ? "reverse" : "normal",
-        }}
-      >
-        {[...items, ...items].map((item, idx) => (
-          <CometCard key={idx}>
-            <div className="w-[360px] rounded-2xl border border-white/10 bg-black/80 p-6 backdrop-blur-xl">
-              {item.tag && (
-                <span className="inline-block mb-4 rounded bg-red-600 px-3 py-1 text-xs font-semibold">
-                  {item.tag}
-                </span>
-              )}
+      {/* VIEWPORT */}
+      <div className="overflow-hidden w-full">
+        {/* MOVING STRIP (200%) */}
+        <div
+          className="flex w-[200%] will-change-transform"
+          style={{
+            animationName: direction === "left" ? "scroll-left" : "scroll-right",
+            animationDuration: "30s",
+            animationTimingFunction: "linear",
+            animationIterationCount: "infinite",
+            animationPlayState: paused ? "paused" : "running",
+          }}
+        >
+          {/* Track A */}
+          <Track items={items} />
 
-              <h3 className="text-xl font-bold text-white mb-2">
-                {item.title}
-              </h3>
-
-              <p className="text-sm text-white/60">
-                {item.desc}
-              </p>
-            </div>
-          </CometCard>
-        ))}
+          {/* Track B (duplicate) */}
+          <Track items={items} />
+        </div>
       </div>
+    </div>
+  );
+}
+
+function Track({ items }: { items: CardItem[] }) {
+  return (
+    <div className="flex w-full gap-8 px-8">
+      {items.map((item, idx) => (
+        <CometCard key={idx}>
+          <div className="w-[360px] shrink-0 rounded-2xl border border-white/10 bg-black/80 p-6 backdrop-blur-xl">
+            {item.tag && (
+              <span className="inline-block mb-4 rounded bg-red-600 px-3 py-1 text-xs font-semibold">
+                {item.tag}
+              </span>
+            )}
+            <h3 className="text-xl font-bold text-white mb-2">
+              {item.title}
+            </h3>
+            <p className="text-sm text-white/60">{item.desc}</p>
+          </div>
+        </CometCard>
+      ))}
     </div>
   );
 }

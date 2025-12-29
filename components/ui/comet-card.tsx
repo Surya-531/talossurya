@@ -1,29 +1,31 @@
 "use client";
 
-import { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-type CometCardProps = {
-  children: React.ReactNode;
-};
-
-export function CometCard({ children }: CometCardProps) {
+export function CometCard({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+  // ✅ Ensure client-only rendering
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  function handleMouseMove(e: React.MouseEvent) {
     if (!ref.current) return;
 
     const rect = ref.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const rotateX = ((y / rect.height) - 0.5) * -14;
-    const rotateY = ((x / rect.width) - 0.5) * 14;
+    const rotateX = -(y - rect.height / 2) / 15;
+    const rotateY = (x - rect.width / 2) / 15;
 
     ref.current.style.transform = `
-      perspective(900px)
+      perspective(1000px)
       rotateX(${rotateX}deg)
       rotateY(${rotateY}deg)
-      scale(1.03)
+      scale(1.04)
     `;
   }
 
@@ -31,11 +33,20 @@ export function CometCard({ children }: CometCardProps) {
     if (!ref.current) return;
 
     ref.current.style.transform = `
-      perspective(900px)
+      perspective(1000px)
       rotateX(0deg)
       rotateY(0deg)
       scale(1)
     `;
+  }
+
+  // 🔑 Prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="relative transition-transform duration-200">
+        {children}
+      </div>
+    );
   }
 
   return (
@@ -43,13 +54,8 @@ export function CometCard({ children }: CometCardProps) {
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="
-        relative
-        transition-transform
-        duration-200
-        ease-out
-        will-change-transform
-      "
+      className="relative transition-transform duration-200 ease-out will-change-transform"
+      style={{ transformStyle: "preserve-3d" }}
     >
       {children}
     </div>
