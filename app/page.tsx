@@ -13,7 +13,7 @@ export default function Home() {
       <MascotSection />
       <HighlightsSection />
       <ScrollVelocity
-        texts={['TALOS 2025', 'REGISTER NOW']} 
+        texts={['TALOS 2026', 'REGISTER NOW']} 
         velocity={50} 
         className="custom-scroll-text"
       />
