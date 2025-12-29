@@ -16,27 +16,21 @@ export const FloatingNav = ({
   navItems: {
     name: string;
     link: string;
-    icon?: JSX.Element;
+    icon?: React.ReactNode;
   }[];
   className?: string;
 }) => {
-  const { scrollYProgress } = useScroll();
-
+  const { scrollY } = useScroll();
   const [visible, setVisible] = useState(false);
 
-  useMotionValueEvent(scrollYProgress, "change", (current) => {
+  useMotionValueEvent(scrollY, "change", (current) => {
     // Check if current is not undefined and is a number
     if (typeof current === "number") {
-      const direction = current! - scrollYProgress.getPrevious()!;
-
-      if (scrollYProgress.get() < 0.05) {
-        setVisible(false);
+      // Show navbar after scrolling down 100px
+      if (current > 100) {
+        setVisible(true);
       } else {
-        if (direction < 0) {
-          setVisible(true);
-        } else {
-          setVisible(false);
-        }
+        setVisible(false);
       }
     }
   });
@@ -45,7 +39,7 @@ export const FloatingNav = ({
     <AnimatePresence mode="wait">
       <motion.div
         initial={{
-          opacity: 1,
+          opacity: 0,
           y: -100,
         }}
         animate={{
@@ -53,28 +47,36 @@ export const FloatingNav = ({
           opacity: visible ? 1 : 0,
         }}
         transition={{
-          duration: 0.2,
+          duration: 0.3,
+          ease: "easeInOut",
         }}
         className={cn(
-          "flex max-w-fit fixed top-10 inset-x-0 mx-auto border border-white/[0.2] rounded-full bg-black shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] z-[5000] pr-2 pl-8 py-2 items-center justify-center space-x-4",
+          "flex w-full fixed top-0 inset-x-0 border-b border-red-600/30 bg-black/90 backdrop-blur-md shadow-[0px_2px_15px_-1px_rgba(220,38,38,0.2)] z-[5000] px-8 py-4 items-center justify-between",
           className
         )}
       >
-        {navItems.map((navItem, idx: number) => (
-          <Link
-            key={`link=${idx}`}
-            href={navItem.link}
-            className={cn(
-              "relative items-center flex space-x-1 text-neutral-50 hover:text-red-500 transition-colors"
-            )}
-          >
-            <span className="block sm:hidden">{navItem.icon}</span>
-            <span className="hidden sm:block text-sm">{navItem.name}</span>
-          </Link>
-        ))}
+        <Link href="/" className="font-black text-xl tracking-tighter text-white hover:text-red-500 transition-colors">
+          TALOS <span className="text-red-600">2026</span>
+        </Link>
+
+        <div className="flex items-center justify-center space-x-6">
+          {navItems.map((navItem, idx: number) => (
+            <Link
+              key={`link=${idx}`}
+              href={navItem.link}
+              className={cn(
+                "relative items-center flex space-x-1 text-neutral-200 hover:text-red-500 transition-colors font-bold"
+              )}
+            >
+              <span className="block sm:hidden">{navItem.icon}</span>
+              <span className="hidden sm:block text-sm">{navItem.name}</span>
+            </Link>
+          ))}
+        </div>
+
         <Link
           href="/login"
-          className="border text-sm font-medium relative border-white/[0.2] text-white px-4 py-2 rounded-full hover:bg-red-500/10 transition-colors"
+          className="border text-sm font-bold relative border-red-600/50 text-white px-6 py-2 rounded-full hover:bg-red-600 hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(220,38,38,0.3)] hover:shadow-[0_0_20px_rgba(220,38,38,0.6)]"
         >
           <span>Login</span>
           <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-red-500 to-transparent h-px" />

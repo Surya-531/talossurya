@@ -9,11 +9,11 @@ export default function HeroSection() {
       
       <Container className='text-center z-10'>
         <div className='inline-block mb-4 px-3 py-1 border border-red-500/30 rounded-full bg-red-500/10 backdrop-blur-sm'>
-          <span className='text-red-400 text-xs font-semibold tracking-wider uppercase'>February 14-16, 2025</span>
+          <span className='text-red-400 text-xs font-semibold tracking-wider uppercase'>February 14-16, 2026</span>
         </div>
         
         <h1 className='text-7xl md:text-9xl font-black mb-6 tracking-tighter text-white'>
-          TALOS <span className='text-primary'>2025</span>
+          TALOS <span className='text-primary'>2026</span>
         </h1>
         
         <p className='text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10'>
